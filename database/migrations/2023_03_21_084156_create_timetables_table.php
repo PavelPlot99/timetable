@@ -1,0 +1,32 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('timetables', function (Blueprint $table) {
+            $table->id();
+            $table->date('date');
+            $table->string('time');
+            $table->string('subject');
+            $table->unsignedBigInteger('group_id');
+            $table->foreign('group_id')->on('groups')->references('id');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('timetable');
+    }
+};

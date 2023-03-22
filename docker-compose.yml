@@ -1,0 +1,55 @@
+version: "3"
+services:
+    #PHP Service
+    app:
+        build:
+            context: ./
+            dockerfile: Dockerfile
+        image: php:8.1-fpm-buster
+        container_name: tg_php
+        restart: unless-stopped
+        tty: true
+        environment:
+            SERVICE_NAME: app
+            SERVICE_TAGS: dev
+        working_dir: /var/www
+        volumes:
+            - ./:/var/www
+            - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
+            - ./php/php.ini:/usr/local/etc/php/php.ini
+        ports:
+            -   "5170:5170"
+
+    #Nginx Service
+    webserver:
+        image: nginx:alpine
+        container_name: tg_server
+        restart: unless-stopped
+        tty: true
+        volumes:
+            - ./:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        ports:
+        - "8031:80"
+        - "431:443"
+
+    #MySQL Service
+    db:
+        image: mysql:5.7.22
+        container_name: tg_db
+        restart: unless-stopped
+        tty: true
+        environment:
+            MYSQL_ROOT_PASSWORD: root
+        volumes:
+            - ./database-local/:/var/www
+            - ./nginx/conf.d/:/etc/nginx/conf.d/
+        ports:
+        - "10008:3306"
+
+    #Adminer
+    adminer:
+        image: adminer
+        restart: always
+        ports:
+        - "6031:8080"
